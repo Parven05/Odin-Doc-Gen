@@ -33,6 +33,7 @@ Open `index.html` in your browser. No server needed.
 
 You must create this file yourself — `gen.py` will not run without it. Place it in the same folder as `gen.py`.
 
+Example :
 ```json
 {
     "project": {
@@ -169,4 +170,4 @@ Projects using odin-docgen in the wild:
 |---|
 | [silicon-docs](https://parven05.github.io/Silicon/) |
 
-Using odin-docgen for your own Odin project? Feel free to open a PR or issue to add your generated site to this list.
+if use this doc-gen tool means feel free to open a PR or issue to add your generated site to this list.
