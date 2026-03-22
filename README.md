@@ -179,6 +179,6 @@ Run this after any source change. Output is always a single `index.html`.
 
 ## Real Usage
 
-[Silicon](https://parven05.github.io/Silicon/)
+[Silicon Docs](https://parven05.github.io/Silicon/)
 
 If you use this tool, feel free to open a PR or issue to add your site here.
