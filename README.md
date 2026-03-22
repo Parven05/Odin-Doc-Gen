@@ -1,4 +1,5 @@
 # Odin Doc-Gen
+
 A simple documentation generator for [Odin](https://odin-lang.org/) source code. Point it at your `src/` folder, run one command, get a single self-contained `index.html` with a searchable, filterable API reference.
 
 ## Requirements
@@ -29,6 +30,8 @@ python gen.py
 Open `index.html` in your browser. No server needed.
 
 ## Configuration (`config.json`)
+
+You must create this file yourself — `gen.py` will not run without it. Place it in the same folder as `gen.py`.
 
 ```json
 {
@@ -77,6 +80,7 @@ Open `index.html` in your browser. No server needed.
 ## What Gets Documented
 
 Only top-level declarations are picked up:
+
 - `proc` — `init_window :: proc(...) -> bool`
 - `struct` — `Shader :: struct { ... }`
 - `enum` — `DrawMode :: enum { ... }`
@@ -114,13 +118,15 @@ Change `theme_css` in `config.json` to switch themes:
 
 | File | Style |
 |---|---|
-| `theme_monokai.css` | Classic Monokai — warm, high contrast |
-| `theme_one_dark_pro.css` | One Dark Pro — deep navy, purple keywords |
-| `theme_github_dark.css` | GitHub Dark — familiar GitHub palette |
-| `theme_gruvbox.css` | Gruvbox — earthy retro warm tones |
-| `theme_catppuccin.css` | Catppuccin Mocha — soft pastel |
-| `theme_tokyo_night.css` | Tokyo Night — neon city, deep navy |
-| `theme_dracula.css` | Dracula — pink, green, purple classic |
+| `theme_monokai.css` | Classic Monokai, warm high contrast |
+| `theme_one_dark_pro.css` | One Dark Pro, deep navy purple keywords |
+| `theme_github_dark.css` | GitHub Dark, familiar GitHub palette |
+| `theme_gruvbox.css` | Gruvbox, earthy retro warm tones |
+| `theme_catppuccin.css` | Catppuccin Mocha, soft pastel |
+| `theme_tokyo_night.css` | Tokyo Night, neon city deep navy |
+| `theme_dracula.css` | Dracula, pink green purple classic |
+| `theme_solarized_dark.css` | Solarized Dark, precision balanced |
+| `theme_palenight.css` | Palenight, Material-style slate |
 
 To make your own theme, copy any `theme_*.css` and update the CSS variables inside.
 
@@ -154,3 +160,13 @@ python gen.py
 ```
 
 Run this after any source change. Output is always a single `index.html`.
+
+## Real Usage
+
+Projects using odin-docgen in the wild:
+
+| Docs |
+|---|---|
+| [silicon-docs](https://parven05.github.io/Silicon/) |
+
+Using odin-docgen for your own Odin project? Feel free to open a PR or issue to add your generated site to this list.
