@@ -166,7 +166,7 @@ Run this after any source change. Output is always a single `index.html`.
 Projects using odin-docgen in the wild:
 
 | Docs |
-|---|---|
+|---|
 | [silicon-docs](https://parven05.github.io/Silicon/) |
 
 Using odin-docgen for your own Odin project? Feel free to open a PR or issue to add your generated site to this list.
