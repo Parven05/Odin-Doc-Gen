@@ -1,6 +1,8 @@
 # Odin Doc-Gen
 
-A simple documentation generator for [Odin](https://odin-lang.org/) projects. Point it at your `src/` folder, run one command, get a single self-contained `index.html` with a searchable, filterable API reference.
+A simple documentation generator for [Odin](https://odin-lang.org/) projects. Point it at your `src/` folder, run one command, get a single self-contained `index.html` with a searchable, filterable code reference.
+
+> Odin already has a great built-in doc tool. This isn't a replacement, while working on my own project I wanted to build my own doc generator, so I made this. I plan to keep improving it, and if you need a quick doc site for your Odin project, feel free to use it and share it around.
 
 ## Requirements
 
@@ -33,7 +35,6 @@ Open `index.html` in your browser. No server needed.
 
 You must create this file yourself — `gen.py` will not run without it. Place it in the same folder as `gen.py`.
 
-Example :
 ```json
 {
     "project": {
@@ -65,33 +66,44 @@ Example :
 }
 ```
 
-**`project`**
-- `name` — main title in the header
-- `subtitle` — shown next to the title, dimmer
-- `tagline` — small line below the title
-- `github_url` — links the GitHub icon in the header
-- `page_title` — browser tab title
+### project
 
-**`sort_order`** — order of declaration types within each file. Lower number = appears first.
+| Key | Description |
+|---|---|
+| `name` | Main title shown in the header |
+| `subtitle` | Shown next to the title, dimmer |
+| `tagline` | Small line below the title |
+| `github_url` | Links the GitHub icon in the header |
+| `page_title` | Browser tab title |
 
-**`file_order`** — order files appear in the docs. List filenames (not paths). Files not listed are sorted alphabetically after. Omit the key entirely to sort everything alphabetically.
+### sort_order
 
-**`theme_css`** — swap this filename to change the colour theme.
+Controls the order declaration types appear within each file section. Lower number appears first. Default order is STRUCT → ENUM → PROC → UNION.
+
+### file_order
+
+Controls the order files appear in the sidebar and main content. List filenames only, not full paths. Files not listed are sorted alphabetically after the ones you specify. Omit the key entirely to sort everything alphabetically.
+
+### theme_css
+
+Swap this filename to change the colour theme. See the Themes section for all available options.
 
 ## What Gets Documented
 
 Only top-level declarations are picked up:
 
-- `proc` — `init_window :: proc(...) -> bool`
-- `struct` — `Shader :: struct { ... }`
-- `enum` — `DrawMode :: enum { ... }`
-- `union` — `Result :: union { ... }`
+| Declaration | Example |
+|---|---|
+| `proc` | `init_window :: proc(...) -> bool` |
+| `struct` | `Shader :: struct { ... }` |
+| `enum` | `DrawMode :: enum { ... }` |
+| `union` | `Result :: union { ... }` |
 
 Everything else (variables, constants, package declarations) is ignored.
 
 ## Doc Comments
 
-Place a `//` or `/* */` comment **directly above** a declaration with **no blank line between them** and it becomes a readable description in the docs.
+Place a `//` or `/* */` comment directly above a declaration with no blank line between them and it becomes a readable description shown in the docs.
 
 ```odin
 // Initialises the GLFW window and creates an OpenGL context.
@@ -102,11 +114,11 @@ init_window :: proc(window_width: i32, window_height: i32, window_title: cstring
 - Both `//` and `/* */` styles work
 - No blank line allowed between the comment and the declaration
 - Comments inside the function body are ignored
-- The comment is shown as description text and removed from the code block
+- The comment appears as description text and is removed from the code block
 
 ## Attributes
 
-Odin attributes like `@(private="file")` above a declaration are shown as a badge next to the name.
+Odin attributes like `@(private="file")` placed above a declaration are detected and shown as a badge next to the declaration name.
 
 ```odin
 @(private="file")
@@ -126,10 +138,8 @@ Change `theme_css` in `config.json` to switch themes:
 | `theme_catppuccin.css` | Catppuccin Mocha, soft pastel |
 | `theme_tokyo_night.css` | Tokyo Night, neon city deep navy |
 | `theme_dracula.css` | Dracula, pink green purple classic |
-| `theme_solarized_dark.css` | Solarized Dark, precision balanced |
-| `theme_palenight.css` | Palenight, Material-style slate |
 
-To make your own theme, copy any `theme_*.css` and update the CSS variables inside.
+To make your own theme, copy any `theme_*.css` and update the CSS variables inside. The variable names are documented in each file.
 
 ## Features
 
@@ -137,7 +147,7 @@ To make your own theme, copy any `theme_*.css` and update the CSS variables insi
 - **Type filters** — STRUCT / ENUM / PROC / UNION buttons in the toolbar
 - **Params bar** — param names and types are colour-coded separately
 - **Used-by links** — shows which other symbols reference a given symbol
-- **Sidebar TOC** — collapsible per-file groups with type icons, drag edge to resize
+- **Sidebar TOC** — collapsible per-file groups with type icons, drag the edge to resize
 - **Syntax highlighting** — Odin-aware, rebuilt from `odin_syntax.json` each run
 - **Copy button** — one-click copy on every code block
 - **Expand / Collapse all** — toolbar buttons to open or close everything at once
@@ -145,7 +155,7 @@ To make your own theme, copy any `theme_*.css` and update the CSS variables insi
 
 ## Extending the Syntax
 
-Add to any of these arrays in `odin_syntax.json` — no Python changes needed:
+`odin_syntax.json` controls what gets highlighted. Add entries to any of these arrays and re-run `gen.py` — no Python changes needed:
 
 ```json
 "keywords":      [...],
@@ -164,10 +174,8 @@ Run this after any source change. Output is always a single `index.html`.
 
 ## Real Usage
 
-Projects using odin-docgen in the wild:
-
 | Docs |
 |---|
-| [silicon-docs](https://parven05.github.io/Silicon/) |
+| [parven05.github.io/Silicon](https://parven05.github.io/Silicon/) |
 
-if use this doc-gen tool means feel free to open a PR or issue to add your generated site to this list.
+Using odin-docgen for your own project ? Open a PR or issue to add your site to this list.
