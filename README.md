@@ -84,7 +84,7 @@ Controls the order declaration types appear within each file section. Lower numb
 
 ### file_order
 
-Controls the order files appear in the sidebar and main content. List filenames only, not full paths. Files not listed are sorted alphabetically after the ones you specify. Omit the key entirely to sort everything alphabetically.
+Controls the order files appear in the sidebar and main content. List filenames only, not full paths. Files not listed are sorted alphabetically after the ones you specify.
 
 ### theme_css
 
