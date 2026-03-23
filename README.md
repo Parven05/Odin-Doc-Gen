@@ -15,12 +15,12 @@ A simple documentation generator for [Odin](https://odin-lang.org/) projects. Po
 your-project/
 ├── src/                  ← your Odin source files
 └── docs/
+    ├── themes/monokai.css
     ├── gen.py
     ├── config.json
     ├── odin_syntax.json
     ├── template.html
-    ├── style.css
-    └── theme_monokai.css
+    └── style.css
 ```
 
 ```bash
@@ -31,7 +31,7 @@ python gen.py
 
 Open `index.html` in your browser. No server needed.
 
-## Configuration (`config.json`)
+## Configuration `config.json`
 
 You must create this file yourself — `gen.py` will not run without it. Place it in the same folder as `gen.py`.
 
@@ -131,13 +131,13 @@ fb_size_callback :: proc(...) {
 
 Change `theme_css` in `config.json` to switch themes:
 
-- `theme_monokai.css`
-- `theme_one_dark_pro.css`
-- `theme_github_dark.css`
-- `theme_gruvbox.css`
-- `theme_catppuccin.css`
-- `theme_tokyo_night.css`
-- `theme_dracula.css`
+- `monokai.css`
+- `one_dark.css`
+- `github.css`
+- `gruvbox.css`
+- `catppuccin.css`
+- `tokyo_night.css`
+- `dracula.css`
 
 To make your own theme, copy any `theme_*.css` and update the CSS variables inside.
 
