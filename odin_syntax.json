@@ -27,7 +27,7 @@
     ],
 
     "builtin_procs": [
-        "len", "cap",
+        "len",
         "size_of", "align_of", "offset_of",
         "type_of", "type_info_of", "typeid_of",
         "make", "new", "new_clone",
