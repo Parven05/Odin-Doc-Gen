@@ -4,6 +4,8 @@ A simple documentation generator for [Odin](https://odin-lang.org/) projects. Po
 
 > Odin already has a great built-in doc tool. This isn't a replacement, while working on my own project I wanted to build my own doc generator, so I made this. I plan to keep improving it, and if you need a quick doc site for your Odin project, feel free to use it and share it around.
 
+<img width="1687" height="954" alt="doc" src="https://github.com/user-attachments/assets/1233c050-9886-4ba4-8907-5eb2fffc0b3d" />
+
 ## Requirements
 
 - Python 3.10+
