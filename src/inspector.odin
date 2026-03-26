@@ -163,13 +163,6 @@ process_node :: proc(node: ^odin_ast.Node, src: string, sb: ^strings.Builder) {
 											ptype.name,
 										)
 									}
-								} else {
-									fmt.sbprintf(
-										sb,
-										"<span class='meta-tag'><span class='label'>param</span><span class='val'>%s</span><span class='label'>:</span><span class='type'>%s</span></span>",
-										pident.name,
-										ptype.name,
-									)
 								}
 							}
 						}
