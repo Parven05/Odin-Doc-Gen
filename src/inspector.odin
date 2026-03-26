@@ -84,7 +84,7 @@ process_node :: proc(node: ^odin_ast.Node, src: string, sb: ^strings.Builder) {
 			fmt.sbprintf(sb, "<div class='meta-bar'>\n")
 
 			// calling convention
-			if proc_lit.type.calling_convention != "" {
+			if proc_lit.type.calling_convention != nil {
 				fmt.sbprintf(
 					sb,
 					"<span class='meta-tag'><span class='label'>conv</span><span class='val'>%v</span></span>",
@@ -150,7 +150,7 @@ process_node :: proc(node: ^odin_ast.Node, src: string, sb: ^strings.Builder) {
 									if dok {
 										fmt.sbprintf(
 											sb,
-											"<span class='meta-tag'><span class='label'>param</span><span class='val'>%s</span><span class='label'>:</span><span class='type'>%s</span><span class='label'>=</span><span class='num'>%s</span></span>",
+											"<span class='meta-tag'><span class='label'>param</span><span class='val'>%s</span><span class='label'>:</span><span class='type'>%s</span><span class='label'> =</span><span class='num'>%s</span></span>",
 											pident.name,
 											ptype.name,
 											def.tok.text,

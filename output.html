@@ -6,32 +6,37 @@
 <title>Odin Doc</title>
 <style>
 :root {
-    --bg:       #1a1a1a;
-    --bg2:      #1e1e1e;
-    --card:     #252525;
-    --border:   #2e2e2e;
-    --border2:  #383838;
-    --text:     #d4d4d4;
-    --text-dim: #777;
-    --text-faint:#444;
-    --accent:   #4e8fce;
-    --sb-bg:    #161616;
-    --sb-border:#2a2a2a;
-    --sb-text:  #999;
-    --sb-hover: #222;
+    /* Backgrounds & UI */
+    --bg:         #272822; /* Classic Monokai Ground */
+    --bg2:        #1e1f1c; /* Slightly darker for depth */
+    --card:       #2d2e27;
+    --border:     #3e3f3a;
+    --border2:    #49483e;
+    --text:       #f8f8f2; /* Off-white / light grey */
+    --text-dim:   #a5a5a2;
+    --text-faint: #75715e; /* The "Stone" color used for comments */
+    --accent:     #f92672; /* The signature Pink */
 
-    --kw:   #569cd6;
-    --ident:#d4d4d4;
-    --ty:   #4ec9b0;
-    --num:  #b5cea8;
-    --str:  #ce9178;
-    --cm:   #6a9955;
-    --br:   #ffd700;
-    --op:   #d4d4d4;
-    --attr: #c586c0;
+    /* Sidebar & Navigation */
+    --sb-bg:      #1e1f1c;
+    --sb-border:  #333333;
+    --sb-text:    #cfcfc2;
+    --sb-hover:   #3e3d32;
 
-    --badge-proc:   #1a3a1a;
-    --badge-proc-fg:#4ec94e;
+    /* Syntax Highlighting (The Monokai DNA) */
+    --kw:     #f92672; /* Keywords: Pink */
+    --ident:  #f8f8f2; /* Identifiers: Off-white */
+    --ty:     #66d9ef; /* Types/Links: Cyan/Blue */
+    --num:    #ae81ff; /* Numbers/Constants: Purple */
+    --str:    #e6db74; /* Strings: Yellow */
+    --cm:     #75715e; /* Comments: Muted Olive */
+    --br:     #f8f8f2; /* Brackets: Usually white */
+    --op:     #f92672; /* Operators: Often Pink or White */
+    --attr:   #a6e22e; /* Attributes/Functions: Lime Green */
+
+    /* Badges & Accents */
+    --badge-proc:    #3e3d32;
+    --badge-proc-fg: #fd971f; /* Orange for active states */
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -198,7 +203,7 @@ summary:hover { background: #2a2a2a; }
     font-size: 0.79rem;
 }
 
-.meta-tag .label { color: var(--text-faint); margin-right: 3px; }
+.meta-tag .label { color: var(--text-faint); margin-right: 6px; }
 .meta-tag .val   { color: var(--text); }
 .meta-tag .type  { color: var(--ty); }
 .meta-tag .num   { color: var(--num); }
@@ -293,7 +298,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='basic'>
 <summary><span class='item-name'>basic</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+</div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>basic</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;basic&quot;</span><span class='br'>)</span>
 <span class='br'>}</span></code></pre></div>
@@ -301,7 +306,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='add'>
 <summary><span class='item-name'>add</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>add</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='num'>1</span>
 <span class='br'>}</span></code></pre></div>
@@ -309,7 +314,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='add_two'>
 <summary><span class='item-name'>add_two</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>add_two</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>, <span class='ident'>y</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='ident'>y</span>
 <span class='br'>}</span></code></pre></div>
@@ -317,7 +322,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='mixed_params'>
 <summary><span class='item-name'>mixed_params</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>f32</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>z</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>bool</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>f32</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>z</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>bool</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>mixed_params</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span>, <span class='ident'>y</span>: <span class='ident'>f32</span>, <span class='ident'>z</span>: <span class='ident'>string</span><span class='br'>)</span> -&gt; <span class='ident'>bool</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>true</span>
 <span class='br'>}</span></code></pre></div>
@@ -325,7 +330,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='named_return'>
 <summary><span class='item-name'>named_return</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>result</span><span class='label'>:</span><span class='type'>int</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>result</span><span class='label'>:</span><span class='type'>int</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>named_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>result</span>: <span class='ident'>int</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>result</span> = <span class='ident'>x</span> * <span class='num'>2</span>
 	<span class='kw'>return</span>
@@ -334,7 +339,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='multi_named_return'>
 <summary><span class='item-name'>multi_named_return</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>value</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>ok</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>value</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>ok</span><span class='label'>:</span><span class='type'>bool</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>multi_named_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>value</span>: <span class='ident'>int</span>, <span class='ident'>ok</span>: <span class='ident'>bool</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span>, <span class='ident'>true</span>
 <span class='br'>}</span></code></pre></div>
@@ -342,7 +347,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='multi_unnamed_return'>
 <summary><span class='item-name'>multi_unnamed_return</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>multi_unnamed_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>int</span>, <span class='ident'>bool</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span>, <span class='ident'>true</span>
 <span class='br'>}</span></code></pre></div>
@@ -350,7 +355,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='default_value'>
 <summary><span class='item-name'>default_value</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span><span class='label'>=</span><span class='num'>10</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span><span class='label'>=</span><span class='num'>20</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span><span class='label'> =</span><span class='num'>10</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span><span class='label'> =</span><span class='num'>20</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>default_value</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span> = <span class='num'>10</span>, <span class='ident'>y</span>: <span class='ident'>int</span> = <span class='num'>20</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='ident'>y</span>
 <span class='br'>}</span></code></pre></div>
@@ -374,7 +379,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='private_proc'>
 <summary><span class='item-name'>private_proc</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+</div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>private_proc</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;private&quot;</span><span class='br'>)</span>
 <span class='br'>}</span></code></pre></div>
@@ -382,13 +387,13 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='multi_attr'>
 <summary><span class='item-name'>multi_attr</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>@(export)</span></span><span class='meta-tag'><span class='attr'>@(private)</span></span></div>
+<span class='meta-tag'><span class='attr'>@(export)</span></span><span class='meta-tag'><span class='attr'>@(private)</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>multi_attr</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span><span class='br'>}</span></code></pre></div>
 </details>
 <details id='generic_single'>
 <summary><span class='item-name'>generic_single</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>generic_single</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: $<span class='ident'>T</span><span class='br'>)</span> -&gt; <span class='ident'>T</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span>
 <span class='br'>}</span></code></pre></div>
@@ -396,7 +401,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='generic_multi'>
 <summary><span class='item-name'>generic_multi</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>generic_multi</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: $<span class='ident'>T</span>, <span class='ident'>y</span>: $<span class='ident'>U</span><span class='br'>)</span> -&gt; <span class='ident'>T</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span>
 <span class='br'>}</span></code></pre></div>
@@ -404,7 +409,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='generic_where'>
 <summary><span class='item-name'>generic_where</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>generic_where</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: $<span class='ident'>T</span><span class='br'>)</span> -&gt; <span class='ident'>T</span> where <span class='ident'>intrinsics</span>.<span class='ident'>type_is_integer</span><span class='br'>(</span><span class='ident'>T</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='num'>1</span>
 <span class='br'>}</span></code></pre></div>
@@ -412,7 +417,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='diverging'>
 <summary><span class='item-name'>diverging</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>diverging</span></span></div>
+<span class='meta-tag'><span class='attr'>diverging</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>diverging</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> -&gt; ! <span class='br'>{</span>
 	<span class='kw'>for</span> <span class='br'>{</span><span class='br'>}</span>
 <span class='br'>}</span></code></pre></div>
@@ -420,7 +425,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='variadic'>
 <summary><span class='item-name'>variadic</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>variadic</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>args</span>: ..<span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
 	<span class='ident'>total</span> := <span class='num'>0</span>
 	<span class='kw'>for</span> <span class='ident'>a</span> <span class='kw'>in</span> <span class='ident'>args</span> <span class='kw'>do</span> <span class='ident'>total</span> += <span class='ident'>a</span>
@@ -430,7 +435,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='variadic_any'>
 <summary><span class='item-name'>variadic_any</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+</div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>variadic_any</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>args</span>: ..<span class='ident'>any</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='ident'>args</span><span class='br'>)</span>
 <span class='br'>}</span></code></pre></div>
@@ -438,7 +443,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='takes_callback'>
 <summary><span class='item-name'>takes_callback</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>dt</span><span class='label'>:</span><span class='type'>f32</span></span></div>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>dt</span><span class='label'>:</span><span class='type'>f32</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>takes_callback</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>cb</span>: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>dt</span>: <span class='ident'>f32</span><span class='br'>)</span>, <span class='ident'>dt</span>: <span class='ident'>f32</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>cb</span><span class='br'>(</span><span class='ident'>dt</span><span class='br'>)</span>
 <span class='br'>}</span></code></pre></div>
@@ -446,7 +451,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='returns_proc'>
 <summary><span class='item-name'>returns_proc</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+</div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>returns_proc</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> -&gt; <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>_</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span><span class='kw'>return</span> <span class='ident'>x</span><span class='br'>}</span>
 <span class='br'>}</span></code></pre></div>
@@ -454,7 +459,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='no_param_multi_return'>
 <summary><span class='item-name'>no_param_multi_return</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>no_param_multi_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>int</span>, <span class='ident'>string</span>, <span class='ident'>bool</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='kw'>return</span> <span class='num'>1</span>, <span class='str'>&quot;hello&quot;</span>, <span class='ident'>true</span>
 <span class='br'>}</span></code></pre></div>
@@ -470,7 +475,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='foo'>
 <summary><span class='item-name'>foo</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>force_inline</span></span></div>
+<span class='meta-tag'><span class='attr'>force_inline</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foo</span> :: #<span class='ident'>force_inline</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;inlined&quot;</span><span class='br'>)</span>
 <span class='br'>}</span></code></pre></div>
@@ -478,7 +483,7 @@ details.flash { animation: flash 0.8s ease-out forwards; }
 <details id='foo_no'>
 <summary><span class='item-name'>foo_no</span><span class='badge'>PROC</span></summary>
 <div class='meta-bar'>
-<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>force_no_inline</span></span></div>
+<span class='meta-tag'><span class='attr'>force_no_inline</span></span></div>
 <div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foo_no</span> :: #<span class='ident'>force_no_inline</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
 	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;no inlined&quot;</span><span class='br'>)</span>
 <span class='br'>}</span></code></pre></div>

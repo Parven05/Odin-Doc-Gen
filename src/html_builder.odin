@@ -13,32 +13,37 @@ write_html_header :: proc(sb: ^strings.Builder) {
 <title>Odin Doc</title>
 <style>
 :root {
-    --bg:       #1a1a1a;
-    --bg2:      #1e1e1e;
-    --card:     #252525;
-    --border:   #2e2e2e;
-    --border2:  #383838;
-    --text:     #d4d4d4;
-    --text-dim: #777;
-    --text-faint:#444;
-    --accent:   #4e8fce;
-    --sb-bg:    #161616;
-    --sb-border:#2a2a2a;
-    --sb-text:  #999;
-    --sb-hover: #222;
+    /* Backgrounds & UI */
+    --bg:         #272822; /* Classic Monokai Ground */
+    --bg2:        #1e1f1c; /* Slightly darker for depth */
+    --card:       #2d2e27;
+    --border:     #3e3f3a;
+    --border2:    #49483e;
+    --text:       #f8f8f2; /* Off-white / light grey */
+    --text-dim:   #a5a5a2;
+    --text-faint: #75715e; /* The "Stone" color used for comments */
+    --accent:     #f92672; /* The signature Pink */
 
-    --kw:   #569cd6;
-    --ident:#d4d4d4;
-    --ty:   #4ec9b0;
-    --num:  #b5cea8;
-    --str:  #ce9178;
-    --cm:   #6a9955;
-    --br:   #ffd700;
-    --op:   #d4d4d4;
-    --attr: #c586c0;
+    /* Sidebar & Navigation */
+    --sb-bg:      #1e1f1c;
+    --sb-border:  #333333;
+    --sb-text:    #cfcfc2;
+    --sb-hover:   #3e3d32;
 
-    --badge-proc:   #1a3a1a;
-    --badge-proc-fg:#4ec94e;
+    /* Syntax Highlighting (The Monokai DNA) */
+    --kw:     #f92672; /* Keywords: Pink */
+    --ident:  #f8f8f2; /* Identifiers: Off-white */
+    --ty:     #66d9ef; /* Types/Links: Cyan/Blue */
+    --num:    #ae81ff; /* Numbers/Constants: Purple */
+    --str:    #e6db74; /* Strings: Yellow */
+    --cm:     #75715e; /* Comments: Muted Olive */
+    --br:     #f8f8f2; /* Brackets: Usually white */
+    --op:     #f92672; /* Operators: Often Pink or White */
+    --attr:   #a6e22e; /* Attributes/Functions: Lime Green */
+
+    /* Badges & Accents */
+    --badge-proc:    #3e3d32;
+    --badge-proc-fg: #fd971f; /* Orange for active states */
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -205,7 +210,7 @@ summary:hover { background: #2a2a2a; }
     font-size: 0.79rem;
 }
 
-.meta-tag .label { color: var(--text-faint); margin-right: 3px; }
+.meta-tag .label { color: var(--text-faint); margin-right: 6px; }
 .meta-tag .val   { color: var(--text); }
 .meta-tag .type  { color: var(--ty); }
 .meta-tag .num   { color: var(--num); }
