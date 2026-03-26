@@ -1,282 +1,567 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Odin Doc</title>
-    <style>
-        body { background: #1e1e1e; color: #d4d4d4; font-family: monospace; padding: 2rem; }
-        h2   { color: #9cdcfe; border-bottom: 1px solid #333; padding-bottom: 0.3rem; }
-        .block      { margin-bottom: 2rem; }
-        .meta { color: #888; font-size: 0.85rem; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-        .meta span { background: #2d2d2d; padding: 0.2rem 0.5rem; border-radius: 4px; }
-        pre         { background: #252526; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odin Doc</title>
+<style>
+:root {
+    --bg:       #1a1a1a;
+    --bg2:      #1e1e1e;
+    --card:     #252525;
+    --border:   #2e2e2e;
+    --border2:  #383838;
+    --text:     #d4d4d4;
+    --text-dim: #777;
+    --text-faint:#444;
+    --accent:   #4e8fce;
+    --sb-bg:    #161616;
+    --sb-border:#2a2a2a;
+    --sb-text:  #999;
+    --sb-hover: #222;
 
-        .kw      { color: #569cd6; font-weight: bold; }
-        .ident   { color: #d4d4d4; }
-        .type    { color: #4ec9b0; }
-        .number  { color: #b5cea8; }
-        .string  { color: #ce9178; }
-        .comment { color: #6a9955; font-style: italic; }
-        .brace   { color: #ffd700; }
-        .op      { color: #d4d4d4; }
-        .attr    { color: #c586c0; }
-    </style>
+    --kw:   #569cd6;
+    --ident:#d4d4d4;
+    --ty:   #4ec9b0;
+    --num:  #b5cea8;
+    --str:  #ce9178;
+    --cm:   #6a9955;
+    --br:   #ffd700;
+    --op:   #d4d4d4;
+    --attr: #c586c0;
+
+    --badge-proc:   #1a3a1a;
+    --badge-proc-fg:#4ec94e;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    display: flex;
+    overflow: hidden;
+}
+
+/* sidebar */
+#sidebar {
+    width: 220px;
+    min-width: 180px;
+    background: var(--sb-bg);
+    border-right: 1px solid var(--sb-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+#sidebar.hidden { width: 0; min-width: 0; opacity: 0; pointer-events: none; }
+
+#sidebar-header {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--sb-border);
+    font-weight: 700;
+    font-size: 0.86rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#sidebar-content { overflow-y: auto; flex: 1; padding: 8px 0; }
+
+.toc-link {
+    display: block;
+    padding: 4px 12px 4px 16px;
+    font-family: monospace;
+    font-size: 0.86rem;
+    color: var(--sb-text);
+    text-decoration: none;
+    border-left: 2px solid var(--badge-proc-fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.1s, color 0.1s;
+}
+.toc-link:hover  { background: var(--sb-hover); color: var(--text); }
+.toc-link.active { color: var(--text); font-weight: 600; background: var(--sb-hover); }
+
+/* main */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+header h1 { font-size: 1rem; font-weight: 700; }
+
+#sidebar-toggle {
+    background: none; border: none; color: var(--text-dim);
+    cursor: pointer; font-size: 1.1rem; padding: 2px 6px;
+}
+#sidebar-toggle:hover { color: var(--text); }
+
+#toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    flex-shrink: 0;
+}
+
+#search {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 5px 10px;
+    color: var(--text);
+    outline: none;
+    font-family: monospace;
+    font-size: 13px;
+    transition: border-color 0.15s;
+}
+#search:focus { border-color: var(--accent); }
+#search::placeholder { color: var(--text-faint); }
+
+#api-root {
+    overflow-y: auto;
+    flex: 1;
+    padding: 16px 20px 40px;
+}
+
+/* details cards */
+details {
+    border: 1px solid var(--border);
+    border-top: none;
+    background: var(--card);
+}
+details:first-child { border-top: 1px solid var(--border); }
+
+summary {
+    padding: 7px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    font-family: monospace;
+    font-size: 0.93rem;
+    user-select: none;
+    transition: background 0.1s;
+}
+summary::-webkit-details-marker { display: none; }
+summary:hover { background: #2a2a2a; }
+
+.item-name { font-weight: 600; color: var(--text); }
+
+.badge {
+    margin-left: auto;
+    font-size: 0.71rem;
+    font-family: monospace;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--badge-proc);
+    color: var(--badge-proc-fg);
+}
+
+/* meta bar */
+.meta-bar {
+    padding: 5px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.meta-tag {
+    background: #2a2a2a;
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 0.79rem;
+}
+
+.meta-tag .label { color: var(--text-faint); margin-right: 3px; }
+.meta-tag .val   { color: var(--text); }
+.meta-tag .type  { color: var(--ty); }
+.meta-tag .num   { color: var(--num); }
+.meta-tag .attr  { color: var(--attr); }
+
+/* code block */
+.code-wrap {
+    border-top: 1px solid var(--border);
+    background: #1e1e1e;
+}
+
+.code-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 3px 10px;
+    background: #252525;
+    border-bottom: 1px solid var(--border);
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.79rem;
+    padding: 1px 6px;
+    border-radius: 3px;
+    transition: background 0.1s, color 0.1s;
+}
+.copy-btn:hover  { background: #333; color: var(--text); }
+.copy-btn.copied { color: var(--ty); }
+
+pre {
+    margin: 0;
+    padding: 12px 16px;
+    overflow-x: auto;
+    tab-size: 4;
+}
+
+code {
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ident);
+    white-space: pre;
+}
+
+/* highlight classes */
+.kw  { color: var(--kw);   font-weight: bold; }
+.ty  { color: var(--ty);   }
+.num { color: var(--num);  }
+.str { color: var(--str);  }
+.cm  { color: var(--cm);   font-style: italic; }
+.br  { color: var(--br);   }
+.op  { color: var(--op);   }
+.at  { color: var(--attr); }
+
+@keyframes flash {
+    0%   { outline: 2px solid var(--accent); }
+    100% { outline: 2px solid transparent; }
+}
+details.flash { animation: flash 0.8s ease-out forwards; }
+
+#no-results {
+    display: none;
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-faint);
+    font-size: 0.93rem;
+}
+</style>
 </head>
 <body>
-<div class='block'>
-<h2>basic</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-</div>
-<pre>basic :: <span class='kw'>proc</span>() {
-	fmt.println(&quot;basic&quot;)
-}</pre>
-</div>
-<div class='block'>
-<h2>add</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <span class='type'>int</span></span>
-</div>
-<pre>add :: <span class='kw'>proc</span>(x: int) -&gt; int {
-	<span class='kw'>return</span> x + 1
-}</pre>
-</div>
-<div class='block'>
-<h2>add_two</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <span class='type'>int</span></span>
-</div>
-<pre>add_two :: <span class='kw'>proc</span>(x, y: int) -&gt; int {
-	<span class='kw'>return</span> x + y
-}</pre>
-</div>
-<div class='block'>
-<h2>mixed_params</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <span class='type'>bool</span></span>
-</div>
-<pre>mixed_params :: <span class='kw'>proc</span>(x: int, y: f32, z: string) -&gt; bool {
-	<span class='kw'>return</span> true
-}</pre>
-</div>
-<div class='block'>
-<h2>named_return</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <b>result</b>: <span class='type'>int</span></span>
-</div>
-<pre>named_return :: <span class='kw'>proc</span>(x: int) -&gt; (result: int) {
-	result = x * 2
+
+<aside id="sidebar">
+    <div id="sidebar-header">
+        <span>Odin Doc</span>
+        <button id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
+    </div>
+    <div id="sidebar-content"></div>
+</aside>
+
+<main id="main">
+    <header>
+        <button id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">&#9776;</button>
+        <h1>Odin Doc</h1>
+    </header>
+    <div id="toolbar">
+        <input type="text" id="search" placeholder="Filter by name..." autocomplete="off" spellcheck="false">
+    </div>
+    <div id="api-root">
+<details id='basic'>
+<summary><span class='item-name'>basic</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>basic</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;basic&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='add'>
+<summary><span class='item-name'>add</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>add</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='num'>1</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='add_two'>
+<summary><span class='item-name'>add_two</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>add_two</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>, <span class='ident'>y</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='ident'>y</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='mixed_params'>
+<summary><span class='item-name'>mixed_params</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>f32</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>z</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>mixed_params</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span>, <span class='ident'>y</span>: <span class='ident'>f32</span>, <span class='ident'>z</span>: <span class='ident'>string</span><span class='br'>)</span> -&gt; <span class='ident'>bool</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='named_return'>
+<summary><span class='item-name'>named_return</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>result</span><span class='label'>:</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>named_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>result</span>: <span class='ident'>int</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>result</span> = <span class='ident'>x</span> * <span class='num'>2</span>
 	<span class='kw'>return</span>
-}</pre>
-</div>
-<div class='block'>
-<h2>multi_named_return</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <b>value</b>: <span class='type'>int</span></span>
-  <span>returns: <b>ok</b>: <span class='type'>bool</span></span>
-</div>
-<pre>multi_named_return :: <span class='kw'>proc</span>(x: int) -&gt; (value: int, ok: bool) {
-	<span class='kw'>return</span> x, true
-}</pre>
-</div>
-<div class='block'>
-<h2>multi_unnamed_return</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <b>_</b>: <span class='type'>int</span></span>
-  <span>returns: <b>_</b>: <span class='type'>bool</span></span>
-</div>
-<pre>multi_unnamed_return :: <span class='kw'>proc</span>(x: int) -&gt; (int, bool) {
-	<span class='kw'>return</span> x, true
-}</pre>
-</div>
-<div class='block'>
-<h2>default_value</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
- <span>param: <b>x</b>: <span class='type'>int</span> = <span class='number'>10</span></span> <span>param: <b>y</b>: <span class='type'>int</span> = <span class='number'>20</span></span>  <span>returns: <span class='type'>int</span></span>
-</div>
-<pre>default_value :: <span class='kw'>proc</span>(x: int = 10, y: int = 20) -&gt; int {
-	<span class='kw'>return</span> x + y
-}</pre>
-</div>
-<div class='block'>
-<h2>foreign_c</h2>
-<div class='meta'>
-  <span>conv: <b>"c"</b></span>
-  <span>returns: <span class='type'>i32</span></span>
-</div>
-<pre>foreign_c :: <span class='kw'>proc</span> &quot;c&quot; (x: i32) -&gt; i32 {
-	<span class='kw'>return</span> x
-}</pre>
-</div>
-<div class='block'>
-<h2>foreign_std</h2>
-<div class='meta'>
-  <span>conv: <b>"stdcall"</b></span>
-  <span>returns: <span class='type'>i32</span></span>
-</div>
-<pre>foreign_std :: <span class='kw'>proc</span> &quot;stdcall&quot; (x: i32) -&gt; i32 {
-	<span class='kw'>return</span> x
-}</pre>
-</div>
-<div class='block'>
-<h2>private_proc</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-</div>
-<pre>private_proc :: <span class='kw'>proc</span>() {
-	fmt.println(&quot;private&quot;)
-}</pre>
-</div>
-<div class='block'>
-<h2>multi_attr</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span class='attr'>@(export)</span>
-  <span class='attr'>@(private)</span>
-</div>
-<pre>multi_attr :: <span class='kw'>proc</span>() {}</pre>
-</div>
-<div class='block'>
-<h2>generic_single</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span class='attr'>generic</span>
-  <span>returns: <span class='type'>T</span></span>
-</div>
-<pre>generic_single :: <span class='kw'>proc</span>(x: $T) -&gt; T {
-	<span class='kw'>return</span> x
-}</pre>
-</div>
-<div class='block'>
-<h2>generic_multi</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span class='attr'>generic</span>
-  <span>returns: <span class='type'>T</span></span>
-</div>
-<pre>generic_multi :: <span class='kw'>proc</span>(x: $T, y: $U) -&gt; T {
-	<span class='kw'>return</span> x
-}</pre>
-</div>
-<div class='block'>
-<h2>generic_where</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span class='attr'>generic</span>
-  <span>returns: <span class='type'>T</span></span>
-  <span class='attr'>has where clauses</span>
-</div>
-<pre>generic_where :: <span class='kw'>proc</span>(x: $T) -&gt; T where intrinsics.type_is_integer(T) {
-	<span class='kw'>return</span> x + 1
-}</pre>
-</div>
-<div class='block'>
-<h2>diverging</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span style='color:#f44'>diverging</span>
-</div>
-<pre>diverging :: <span class='kw'>proc</span>() -&gt; ! {
-	<span class='kw'>for</span> {}
-}</pre>
-</div>
-<div class='block'>
-<h2>variadic</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <span class='type'>int</span></span>
-</div>
-<pre>variadic :: <span class='kw'>proc</span>(args: ..int) -&gt; int {
-	total := 0
-	<span class='kw'>for</span> a <span class='kw'>in</span> args <span class='kw'>do</span> total += a
-	<span class='kw'>return</span> total
-}</pre>
-</div>
-<div class='block'>
-<h2>variadic_any</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-</div>
-<pre>variadic_any :: <span class='kw'>proc</span>(args: ..any) {
-	fmt.println(args)
-}</pre>
-</div>
-<div class='block'>
-<h2>takes_callback</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-</div>
-<pre>takes_callback :: <span class='kw'>proc</span>(cb: <span class='kw'>proc</span>(dt: f32), dt: f32) {
-	cb(dt)
-}</pre>
-</div>
-<div class='block'>
-<h2>returns_proc</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-</div>
-<pre>returns_proc :: <span class='kw'>proc</span>() -&gt; <span class='kw'>proc</span>(_: int) -&gt; int {
-	<span class='kw'>return</span> <span class='kw'>proc</span>(x: int) -&gt; int {<span class='kw'>return</span> x}
-}</pre>
-</div>
-<div class='block'>
-<h2>no_param_multi_return</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span>returns: <b>_</b>: <span class='type'>int</span></span>
-  <span>returns: <b>_</b>: <span class='type'>string</span></span>
-  <span>returns: <b>_</b>: <span class='type'>bool</span></span>
-</div>
-<pre>no_param_multi_return :: <span class='kw'>proc</span>() -&gt; (int, string, bool) {
-	<span class='kw'>return</span> 1, &quot;hello&quot;, true
-}</pre>
-</div>
-<div class='block'>
-<h2>foreign_proc</h2>
-<div class='meta'>
-  <span>conv: <b>"c"</b></span>
-  <span>returns: <span class='type'>i32</span></span>
-</div>
-<pre>foreign_proc :: <span class='kw'>proc</span> &quot;c&quot; (x: i32) -&gt; i32 {
-	<span class='kw'>return</span> x * 2
-}</pre>
-</div>
-<div class='block'>
-<h2>foo</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span class='attr'>force_inline</span>
-</div>
-<pre>foo :: #force_inline <span class='kw'>proc</span>() {
-	fmt.println(&quot;inlined&quot;)
-}</pre>
-</div>
-<div class='block'>
-<h2>foo_no</h2>
-<div class='meta'>
-  <span>conv: <b>nil</b></span>
-  <span style='color:#f44'>force_no_inline</span>
-</div>
-<pre>foo_no :: #force_no_inline <span class='kw'>proc</span>() {
-	fmt.println(&quot;no inlined&quot;)
-}</pre>
-</div>
-<div class='block'>
-<h2>sub</h2>
-<div class='meta'>
-  <span>conv: <b>"c"</b></span>
- <span>param: <b>x</b>: <span class='type'>int</span> = <span class='number'>1</span></span>  <span>returns: <b>value</b>: <span class='type'>int</span></span>
-</div>
-<pre>sub :: <span class='kw'>proc</span> &quot;c&quot; (x: int = 1, y: int) -&gt; (value: int) {
-	<span class='kw'>return</span> x - y
-}</pre>
-</div>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='multi_named_return'>
+<summary><span class='item-name'>multi_named_return</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>value</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>ok</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>multi_named_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>value</span>: <span class='ident'>int</span>, <span class='ident'>ok</span>: <span class='ident'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>, <span class='ident'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='multi_unnamed_return'>
+<summary><span class='item-name'>multi_unnamed_return</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>multi_unnamed_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>int</span>, <span class='ident'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>, <span class='ident'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='default_value'>
+<summary><span class='item-name'>default_value</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span><span class='label'>=</span><span class='num'>10</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span><span class='label'>=</span><span class='num'>20</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>default_value</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span> = <span class='num'>10</span>, <span class='ident'>y</span>: <span class='ident'>int</span> = <span class='num'>20</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='ident'>y</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foreign_c'>
+<summary><span class='item-name'>foreign_c</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>"c"</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>i32</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>i32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foreign_c</span> :: <span class='kw'>proc</span> <span class='str'>&quot;c&quot;</span> <span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>i32</span><span class='br'>)</span> -&gt; <span class='ident'>i32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foreign_std'>
+<summary><span class='item-name'>foreign_std</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>"stdcall"</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>i32</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>i32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foreign_std</span> :: <span class='kw'>proc</span> <span class='str'>&quot;stdcall&quot;</span> <span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>i32</span><span class='br'>)</span> -&gt; <span class='ident'>i32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='private_proc'>
+<summary><span class='item-name'>private_proc</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>private_proc</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;private&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='multi_attr'>
+<summary><span class='item-name'>multi_attr</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>@(export)</span></span><span class='meta-tag'><span class='attr'>@(private)</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>multi_attr</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span><span class='br'>}</span></code></pre></div>
+</details>
+<details id='generic_single'>
+<summary><span class='item-name'>generic_single</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>generic_single</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: $<span class='ident'>T</span><span class='br'>)</span> -&gt; <span class='ident'>T</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='generic_multi'>
+<summary><span class='item-name'>generic_multi</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>generic_multi</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: $<span class='ident'>T</span>, <span class='ident'>y</span>: $<span class='ident'>U</span><span class='br'>)</span> -&gt; <span class='ident'>T</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='generic_where'>
+<summary><span class='item-name'>generic_where</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>generic_where</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: $<span class='ident'>T</span><span class='br'>)</span> -&gt; <span class='ident'>T</span> where <span class='ident'>intrinsics</span>.<span class='ident'>type_is_integer</span><span class='br'>(</span><span class='ident'>T</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> + <span class='num'>1</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='diverging'>
+<summary><span class='item-name'>diverging</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>diverging</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>diverging</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> -&gt; ! <span class='br'>{</span>
+	<span class='kw'>for</span> <span class='br'>{</span><span class='br'>}</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='variadic'>
+<summary><span class='item-name'>variadic</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>variadic</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>args</span>: ..<span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
+	<span class='ident'>total</span> := <span class='num'>0</span>
+	<span class='kw'>for</span> <span class='ident'>a</span> <span class='kw'>in</span> <span class='ident'>args</span> <span class='kw'>do</span> <span class='ident'>total</span> += <span class='ident'>a</span>
+	<span class='kw'>return</span> <span class='ident'>total</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='variadic_any'>
+<summary><span class='item-name'>variadic_any</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>variadic_any</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>args</span>: ..<span class='ident'>any</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='ident'>args</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='takes_callback'>
+<summary><span class='item-name'>takes_callback</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>dt</span><span class='label'>:</span><span class='type'>f32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>takes_callback</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>cb</span>: <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>dt</span>: <span class='ident'>f32</span><span class='br'>)</span>, <span class='ident'>dt</span>: <span class='ident'>f32</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>cb</span><span class='br'>(</span><span class='ident'>dt</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='returns_proc'>
+<summary><span class='item-name'>returns_proc</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>returns_proc</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> -&gt; <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>_</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>int</span><span class='br'>)</span> -&gt; <span class='ident'>int</span> <span class='br'>{</span><span class='kw'>return</span> <span class='ident'>x</span><span class='br'>}</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='no_param_multi_return'>
+<summary><span class='item-name'>no_param_multi_return</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>no_param_multi_return</span> :: <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> -&gt; <span class='br'>(</span><span class='ident'>int</span>, <span class='ident'>string</span>, <span class='ident'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='num'>1</span>, <span class='str'>&quot;hello&quot;</span>, <span class='ident'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foreign_proc'>
+<summary><span class='item-name'>foreign_proc</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>"c"</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>i32</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>i32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foreign_proc</span> :: <span class='kw'>proc</span> <span class='str'>&quot;c&quot;</span> <span class='br'>(</span><span class='ident'>x</span>: <span class='ident'>i32</span><span class='br'>)</span> -&gt; <span class='ident'>i32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> * <span class='num'>2</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foo'>
+<summary><span class='item-name'>foo</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>force_inline</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foo</span> :: #<span class='ident'>force_inline</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;inlined&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foo_no'>
+<summary><span class='item-name'>foo_no</span><span class='badge'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>nil</span></span><span class='meta-tag'><span class='attr'>force_no_inline</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)'>copy</button></div><pre><code class='language-odin'><span class='ident'>foo_no</span> :: #<span class='ident'>force_no_inline</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span>.<span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;no inlined&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+
+    <div id="no-results">No symbols match</div>
+    </div>
+</main>
+
+<script>
+// sidebar links
+var allDetails = Array.from(document.querySelectorAll("details"));
+var sidebar    = document.getElementById("sidebar-content");
+
+allDetails.forEach(function(d) {
+    var name = d.querySelector(".item-name");
+    if (!name) return;
+    var a = document.createElement("a");
+    a.className   = "toc-link";
+    a.href        = "#" + d.id;
+    a.textContent = name.textContent;
+    a.onclick = function(e) {
+        e.preventDefault();
+        navigateTo(d.id);
+    };
+    sidebar.appendChild(a);
+});
+
+function navigateTo(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.classList.add("flash");
+    setTimeout(function() { el.classList.remove("flash"); }, 800);
+    document.querySelectorAll(".toc-link").forEach(function(a) {
+        a.classList.toggle("active", a.href.endsWith("#" + id));
+    });
+    history.replaceState(null, "", "#" + id);
+}
+
+// toggle sidebar
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hidden");
+}
+
+// search filter
+document.getElementById("search").addEventListener("input", function() {
+    var term = this.value.toLowerCase();
+    var any  = false;
+    allDetails.forEach(function(d) {
+        var name = d.querySelector(".item-name");
+        var vis  = !name || name.textContent.toLowerCase().includes(term);
+        d.style.display = vis ? "" : "none";
+        if (vis) any = true;
+    });
+    document.querySelectorAll(".toc-link").forEach(function(a) {
+        a.style.display = a.textContent.toLowerCase().includes(term) ? "" : "none";
+    });
+    document.getElementById("no-results").style.display = any ? "none" : "block";
+});
+
+// copy button
+function copyCode(btn) {
+    var code = btn.closest("details").querySelector("code");
+    if (!code) return;
+    navigator.clipboard.writeText(code.textContent).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = "✓";
+        btn.classList.add("copied");
+        setTimeout(function() { btn.textContent = orig; btn.classList.remove("copied"); }, 1500);
+    });
+}
+
+// anchor on load
+(function() {
+    var hash = window.location.hash.slice(1);
+    if (!hash) return;
+    var el = document.getElementById(hash);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function() { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 80);
+}());
+</script>
 </body>
 </html>
