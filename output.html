@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odin Doc</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --bg:          #1c1d18;
+  --bg2:         #16170f;
+  --bg3:         #222318;
+  --card:        #23241a;
+  --card-hover:  #282920;
+  --border:      #2e2f24;
+  --border2:     #3a3b2e;
+  --border3:     #454637;
+  --text:        #e8e6d9;
+  --text-dim:    #9a9880;
+  --text-faint:  #5c5a48;
+  --accent:      #f92672;
+  --accent2:     #fd971f;
+
+  --sb-bg:       #131410;
+  --sb-border:   #252619;
+  --sb-hover:    #1e1f16;
+  --sb-text:     #c8c6b4;
+
+  --file-line:   #3a3b2e;
+
+  /* syntax */
+  --kw:          #f92672;
+  --ty:          #66d9ef;
+  --bi:          #a6e22e;
+  --num:         #ae81ff;
+  --str:         #e6db74;
+  --cm:          #6a6854;
+  --br:          #c8c6b4;
+  --op:          #6e6d5a;
+  --ident:       #e8e6d9;
+
+  /* badges */
+  --proc-bg:     #2c2416;   --proc-fg:   #fd971f;
+  --struct-bg:   #172514;   --struct-fg: #a6e22e;
+  --enum-bg:     #121826;   --enum-fg:   #66d9ef;
+  --union-bg:    #22132a;   --union-fg:  #ae81ff;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 14px;
+  display: flex;
+  overflow: hidden;
+}
+
+.odin-icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--accent); /* This uses your blue accent color */
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* ════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════ */
+#sidebar {
+  width: 260px;
+  min-width: 220px;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.2s ease, opacity 0.2s ease, min-width 0.2s ease;
+}
+#sidebar.hidden { width: 0; min-width: 0; opacity: 0; pointer-events: none; }
+
+#sidebar-logo {
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid var(--sb-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.logo-mark {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+.logo-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+/* shared icon button — used in sidebar header AND topbar */
+.icon-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  padding: 4px 5px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.icon-btn svg { width: 15px; height: 15px; }
+.icon-btn:hover {
+  background: var(--border);
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+#sidebar-scroll { overflow-y: auto; flex: 1; padding: 6px 0 20px; }
+
+/* sidebar file group */
+.sb-file { margin-bottom: 1px; }
+.sb-file-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 12px;
+  cursor: pointer;
+  user-select: none;
+  border-left: 2px solid transparent;
+  transition: background 0.1s, border-color 0.1s;
+}
+.sb-file-header:hover { background: var(--sb-hover); }
+.sb-file-header.open  { border-left-color: var(--border3); }
+
+.sb-file-chevron {
+  font-size: 7px;
+  color: var(--text-faint);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.sb-file-header.open .sb-file-chevron { transform: rotate(90deg); }
+
+.sb-file-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-file-items { display: none; }
+.sb-file-items.open { display: block; }
+
+.toc-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 26px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.79rem;
+  color: var(--sb-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.08s, color 0.08s, border-color 0.08s;
+  opacity: 0.75;
+}
+.toc-link:hover  { background: var(--sb-hover); color: var(--text); opacity: 1; }
+.toc-link.active {
+  color: var(--text);
+  border-left-color: var(--accent2);
+  background: var(--sb-hover);
+  opacity: 1;
+}
+.toc-name { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+
+/* letter badge in sidebar */
+.toc-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  width: 15px; height: 15px;
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.toc-badge-proc   { background: var(--proc-bg);   color: var(--proc-fg); }
+.toc-badge-struct { background: var(--struct-bg); color: var(--struct-fg); }
+.toc-badge-enum   { background: var(--enum-bg);   color: var(--enum-fg); }
+.toc-badge-union  { background: var(--union-bg);  color: var(--union-fg); }
+
+/* ════════════════════════════════════════
+   TOPBAR
+════════════════════════════════════════ */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+#topbar {
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+/* title + tagline */
+#topbar-brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+#topbar-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+#topbar-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.90rem;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+#topbar-tagline {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.70rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* github icon link */
+#github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  text-decoration: none;
+  padding: 4px 5px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+  line-height: 0;
+}
+#github-link svg { width: 16px; height: 16px; }
+#github-link:hover {
+  background: var(--border);
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+#topbar-actions { display: flex; align-items: center; gap: 4px; }
+
+/* ════════════════════════════════════════
+   TOOLBAR
+════════════════════════════════════════ */
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  flex-shrink: 0;
+}
+
+#search {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 6px 12px 6px 32px;
+  color: var(--text);
+  outline: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.79rem;
+  transition: border-color 0.15s, background 0.15s;
+  min-width: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235c5a48' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+#search:focus { border-color: var(--accent); background-color: var(--card); }
+#search::placeholder { color: var(--text-faint); }
+
+#filter-bar { display: flex; gap: 4px; flex-shrink: 0; }
+
+.filter-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 4px 9px;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+.filter-btn:hover { color: var(--text-dim); border-color: var(--border3); background: var(--card); }
+.filter-btn[data-kind="PROC"].on   { background: var(--proc-bg);   color: var(--proc-fg);   border-color: var(--proc-fg); }
+.filter-btn[data-kind="STRUCT"].on { background: var(--struct-bg); color: var(--struct-fg); border-color: var(--struct-fg); }
+.filter-btn[data-kind="ENUM"].on   { background: var(--enum-bg);   color: var(--enum-fg);   border-color: var(--enum-fg); }
+.filter-btn[data-kind="UNION"].on  { background: var(--union-bg);  color: var(--union-fg);  border-color: var(--union-fg); }
+
+/* ════════════════════════════════════════
+   CONTENT AREA
+════════════════════════════════════════ */
+#api-root {
+  overflow-y: auto;
+  flex: 1;
+  padding: 14px 22px 60px;
+}
+
+/* ── file group ── */
+.file-group { margin-bottom: 8px; }
+
+.file-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 10px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 6px 6px 0 0;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-bottom: none;
+  transition: background 0.1s;
+}
+.file-header:hover { background: var(--card-hover); }
+.file-group.collapsed .file-header {
+  border-radius: 6px;
+  border-bottom: 1px solid var(--border2);
+}
+.file-chevron {
+  font-size: 8px;
+  color: var(--text-faint);
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+}
+.file-group.collapsed .file-chevron { transform: rotate(-90deg); }
+.file-icon { font-size: 12px; opacity: 0.5; flex-shrink: 0; }
+.file-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--text);
+  flex: 1;
+}
+.file-counts { display: flex; gap: 5px; flex-shrink: 0; }
+.file-counts span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  opacity: 0.85;
+}
+.fc-struct { background: var(--struct-bg); color: var(--struct-fg); }
+.fc-enum   { background: var(--enum-bg);   color: var(--enum-fg); }
+.fc-union  { background: var(--union-bg);  color: var(--union-fg); }
+.fc-proc   { background: var(--proc-bg);   color: var(--proc-fg); }
+
+.file-body {
+  border: 1px solid var(--border2);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+.file-group.collapsed .file-body { display: none; }
+
+/* ── declaration cards ── */
+details {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+details:last-child { border-bottom: none; }
+
+summary {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  user-select: none;
+  transition: background 0.08s;
+}
+summary::-webkit-details-marker { display: none; }
+summary:hover { background: var(--card-hover); }
+
+.chevron {
+  font-size: 7px;
+  color: var(--text-faint);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+details[open] > summary .chevron { transform: rotate(90deg); }
+
+.item-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 0.91rem;
+  color: var(--text);
+}
+.badge {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.60rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+.badge-proc   { background: var(--proc-bg);   color: var(--proc-fg); }
+.badge-struct { background: var(--struct-bg); color: var(--struct-fg); }
+.badge-enum   { background: var(--enum-bg);   color: var(--enum-fg); }
+.badge-union  { background: var(--union-bg);  color: var(--union-fg); }
+
+/* ── meta bar ── */
+.meta-bar {
+  padding: 5px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.73rem;
+  color: var(--text-dim);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+.meta-tag {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.meta-tag .label { color: var(--text-faint); }
+.meta-tag .val   { color: var(--text); }
+.meta-tag .type  { color: var(--ty); }
+.meta-tag .num   { color: var(--num); }
+.meta-tag .attr  { color: var(--bi); }
+
+/* ── code block ── */
+.code-wrap {
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  position: relative;
+}
+.copy-btn {
+  position: absolute;
+  top: 7px; right: 10px;
+  z-index: 2;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text-faint);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.1s, color 0.1s, border-color 0.1s;
+  line-height: 0;
+}
+.copy-btn svg { width: 13px; height: 13px; stroke: currentColor; }
+.code-wrap:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: var(--border); color: var(--text); border-color: var(--border3); }
+.copy-btn.copied { opacity: 1; color: var(--bi); border-color: var(--bi); }
+.copy-btn .check { display: none; }
+.copy-btn.copied .copy-icon { display: none; }
+.copy-btn.copied .check { display: block; }
+
+pre { margin: 0; padding: 14px 18px; overflow-x: auto; tab-size: 4; }
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--ident);
+  white-space: pre;
+}
+
+/* ── syntax ── */
+.kw    { color: var(--kw);  font-weight: 600; }
+.ty    { color: var(--ty);  }
+.bi    { color: var(--bi);  }
+.num   { color: var(--num); }
+.str   { color: var(--str); }
+.cm    { color: var(--cm);  font-style: italic; }
+.br    { color: var(--br);  opacity: 0.7; }
+.op    { color: var(--op);  }
+.ident { color: var(--ident); }
+
+/* ── flash ── */
+@keyframes flash-in {
+  0%   { box-shadow: inset 0 0 0 2px var(--accent); }
+  100% { box-shadow: inset 0 0 0 2px transparent; }
+}
+details.flash { animation: flash-in 0.9s ease-out forwards; }
+
+/* ── no results ── */
+#no-results {
+  display: none;
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+}
+#no-results svg { width: 32px; height: 32px; margin-bottom: 12px; opacity: 0.3; }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+<aside id="sidebar">
+  <div id="sidebar-logo">
+    <div class="logo-mark">O</div>
+    <span class="logo-text">Odin Doc</span>
+    <!-- icon-only expand/collapse all — matches topbar style -->
+    <button class="icon-btn" id="sb-toggle-all-btn" onclick="sbToggleAll()" title="Expand / Collapse all">
+      <svg id="sb-icon-expand" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M8 3v10M3 8h10"/>
+      </svg>
+      <svg id="sb-icon-collapse" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none">
+        <path d="M3 8h10"/>
+      </svg>
+    </button>
+  </div>
+  <div id="sidebar-scroll"></div>
+</aside>
+
+<!-- ══ MAIN ═════════════════════════════════════════════ -->
+<main id="main">
+  <div id="topbar">
+    <!-- sidebar toggle -->
+    <button class="icon-btn" onclick="toggleSidebar()" title="Toggle sidebar">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="1" y="2" width="14" height="12" rx="2"/>
+        <path d="M5 2v12"/>
+      </svg>
+    </button>
+
+    <!-- title + tagline -->
+    <div id="topbar-brand">
+      <div id="topbar-title-row">
+        <span id="topbar-title">Odin Doc</span>
+        <span id="topbar-tagline">an Odin documentation viewer</span>
+      </div>
+    </div>
+
+    <div id="topbar-actions">
+      <!-- GitHub link -->
+      <a id="github-link" href="https://github.com/odin-lang/Odin" target="_blank" rel="noopener" title="View on GitHub">
+        <svg viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+            .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+            -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+            .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+            .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+            0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+      </a>
+      <!-- icon-only expand/collapse all (mirrors sidebar) -->
+      <button class="icon-btn" id="toggle-all-btn" onclick="toggleAll()" title="Expand / Collapse all">
+        <svg id="main-icon-expand" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M8 3v10M3 8h10"/>
+        </svg>
+        <svg id="main-icon-collapse" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none">
+          <path d="M3 8h10"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="toolbar">
+    <input type="text" id="search" placeholder="Search symbols..." autocomplete="off" spellcheck="false">
+    <div id="filter-bar">
+      <button class="filter-btn" data-kind="STRUCT" onclick="toggleKind(this)">STRUCT</button>
+      <button class="filter-btn" data-kind="ENUM"   onclick="toggleKind(this)">ENUM</button>
+      <button class="filter-btn" data-kind="UNION"  onclick="toggleKind(this)">UNION</button>
+      <button class="filter-btn" data-kind="PROC"   onclick="toggleKind(this)">PROC</button>
+    </div>
+  </div>
+  <div id="api-root">
+<section class='file-group' data-file='test'>
+<div class='file-header' onclick='toggleFileGroup(this)'>
+  <span class='file-chevron'>&#9660;</span>
+  <span class='file-icon'>&#128196;</span>
+  <span class='file-name'>test</span>
+  <span class='file-counts'><span class='fc-struct'>16 struct</span><span class='fc-enum'>4 enum</span><span class='fc-union'>5 union</span><span class='fc-proc'>6 proc</span></span></div>
+<div class='file-body'>
+<details id='Vec2'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Vec2</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Vec2</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>x</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+	<span class='ident'>y</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Vec3'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Vec3</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Vec3</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>x</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+	<span class='ident'>y</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+	<span class='ident'>z</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Rect'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Rect</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Rect</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>x</span><span class='op'>:</span>      <span class='ty'>f32</span><span class='op'>,</span>
+	<span class='ident'>y</span><span class='op'>:</span>      <span class='ty'>f32</span><span class='op'>,</span>
+	<span class='ident'>width</span><span class='op'>:</span>  <span class='ty'>f32</span><span class='op'>,</span>
+	<span class='ident'>height</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Color_RGBA'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Color_RGBA</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Color_RGBA</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>r</span><span class='op'>:</span> <span class='ty'>u8</span><span class='op'>,</span>
+	<span class='ident'>g</span><span class='op'>:</span> <span class='ty'>u8</span><span class='op'>,</span>
+	<span class='ident'>b</span><span class='op'>:</span> <span class='ty'>u8</span><span class='op'>,</span>
+	<span class='ident'>a</span><span class='op'>:</span> <span class='ty'>u8</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Transform'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Transform</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Transform</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>position</span><span class='op'>:</span> <span class='ty'>Vec3</span><span class='op'>,</span>
+	<span class='ident'>rotation</span><span class='op'>:</span> <span class='ty'>Vec3</span><span class='op'>,</span>
+	<span class='ident'>scale</span><span class='op'>:</span>    <span class='ty'>Vec3</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Entity'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Entity</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Entity</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>id</span><span class='op'>:</span>        <span class='ty'>u64</span><span class='op'>,</span>
+	<span class='ident'>name</span><span class='op'>:</span>      <span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>transform</span><span class='op'>:</span> <span class='ty'>Transform</span><span class='op'>,</span>
+	<span class='ident'>active</span><span class='op'>:</span>    <span class='ty'>bool</span><span class='op'>,</span>
+	<span class='ident'>tag</span><span class='op'>:</span>       <span class='ty'>u32</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Allocator_Stats'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Allocator_Stats</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Allocator_Stats</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='op'>#</span><span class='ident'>packed</span> <span class='br'>{</span>
+	<span class='ident'>total_allocated</span><span class='op'>:</span>  <span class='ty'>int</span><span class='op'>,</span>
+	<span class='ident'>total_freed</span><span class='op'>:</span>      <span class='ty'>int</span><span class='op'>,</span>
+	<span class='ident'>current_usage</span><span class='op'>:</span>    <span class='ty'>int</span><span class='op'>,</span>
+	<span class='ident'>peak_usage</span><span class='op'>:</span>       <span class='ty'>int</span><span class='op'>,</span>
+	<span class='ident'>allocation_count</span><span class='op'>:</span> <span class='ty'>int</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Node'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Node</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Node</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>value</span><span class='op'>:</span> <span class='ty'>int</span><span class='op'>,</span>
+	<span class='ident'>left</span><span class='op'>:</span>  <span class='op'>^</span><span class='ty'>Node</span><span class='op'>,</span>
+	<span class='ident'>right</span><span class='op'>:</span> <span class='op'>^</span><span class='ty'>Node</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Slice_Header'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Slice_Header</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Slice_Header</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>data</span><span class='op'>:</span> <span class='ty'>rawptr</span><span class='op'>,</span>
+	<span class='bi'>len</span><span class='op'>:</span>  <span class='ty'>int</span><span class='op'>,</span>
+	<span class='bi'>cap</span><span class='op'>:</span>  <span class='ty'>int</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='HTTP_Request'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>HTTP_Request</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>HTTP_Request</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>method</span><span class='op'>:</span>  <span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>path</span><span class='op'>:</span>    <span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>headers</span><span class='op'>:</span> <span class='kw'>map</span><span class='br'>[</span><span class='ty'>string</span><span class='br'>]</span><span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>body</span><span class='op'>:</span>    <span class='br'>[</span><span class='br'>]</span><span class='ty'>u8</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Binary_Expr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Binary_Expr</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Binary_Expr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>op</span><span class='op'>:</span>    <span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>left</span><span class='op'>:</span>  <span class='ty'>Expr</span><span class='op'>,</span>
+	<span class='ident'>right</span><span class='op'>:</span> <span class='ty'>Expr</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Unary_Expr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Unary_Expr</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Unary_Expr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>op</span><span class='op'>:</span>      <span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>operand</span><span class='op'>:</span> <span class='ty'>Expr</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Call_Expr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Call_Expr</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Call_Expr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>callee</span><span class='op'>:</span> <span class='ty'>string</span><span class='op'>,</span>
+	<span class='ident'>args</span><span class='op'>:</span>   <span class='br'>[</span><span class='br'>]</span><span class='ty'>Expr</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='IPv4_Addr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>IPv4_Addr</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>IPv4_Addr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>octets</span><span class='op'>:</span> <span class='br'>[</span><span class='num'>4</span><span class='br'>]</span><span class='ty'>u8</span><span class='op'>,</span>
+	<span class='ident'>port</span><span class='op'>:</span>   <span class='ty'>u16</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='IPv6_Addr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>IPv6_Addr</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>IPv6_Addr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>groups</span><span class='op'>:</span> <span class='br'>[</span><span class='num'>8</span><span class='br'>]</span><span class='ty'>u16</span><span class='op'>,</span>
+	<span class='ident'>port</span><span class='op'>:</span>   <span class='ty'>u16</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Error'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Error</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Error</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>code</span><span class='op'>:</span>    <span class='ty'>int</span><span class='op'>,</span>
+	<span class='ident'>message</span><span class='op'>:</span> <span class='ty'>string</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Direction'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Direction</span><span class='badge badge-enum'>ENUM</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Direction</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>enum</span> <span class='br'>{</span>
+	<span class='ty'>North</span><span class='op'>,</span>
+	<span class='ty'>South</span><span class='op'>,</span>
+	<span class='ty'>East</span><span class='op'>,</span>
+	<span class='ty'>West</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Color'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Color</span><span class='badge badge-enum'>ENUM</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Color</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>enum</span> <span class='ty'>u8</span> <span class='br'>{</span>
+	<span class='ty'>Red</span>   <span class='op'>=</span> <span class='num'>0</span><span class='op'>,</span>
+	<span class='ty'>Green</span> <span class='op'>=</span> <span class='num'>1</span><span class='op'>,</span>
+	<span class='ty'>Blue</span>  <span class='op'>=</span> <span class='num'>2</span><span class='op'>,</span>
+	<span class='ty'>Alpha</span> <span class='op'>=</span> <span class='num'>255</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Token_Kind'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Token_Kind</span><span class='badge badge-enum'>ENUM</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Token_Kind</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>enum</span> <span class='br'>{</span>
+	<span class='ty'>Invalid</span><span class='op'>,</span>
+	<span class='ty'>EOF</span><span class='op'>,</span>
+	<span class='ty'>Ident</span><span class='op'>,</span>
+	<span class='ty'>Int</span><span class='op'>,</span>
+	<span class='ty'>Float</span><span class='op'>,</span>
+	<span class='ty'>String</span><span class='op'>,</span>
+	<span class='ty'>Plus</span><span class='op'>,</span>
+	<span class='ty'>Minus</span><span class='op'>,</span>
+	<span class='ty'>Star</span><span class='op'>,</span>
+	<span class='ty'>Slash</span><span class='op'>,</span>
+	<span class='ty'>Eq</span><span class='op'>,</span>
+	<span class='ty'>Not_Eq</span><span class='op'>,</span>
+	<span class='ty'>Lt</span><span class='op'>,</span>
+	<span class='ty'>Gt</span><span class='op'>,</span>
+	<span class='ty'>Open_Paren</span><span class='op'>,</span>
+	<span class='ty'>Close_Paren</span><span class='op'>,</span>
+	<span class='ty'>Open_Brace</span><span class='op'>,</span>
+	<span class='ty'>Close_Brace</span><span class='op'>,</span>
+	<span class='ty'>Comma</span><span class='op'>,</span>
+	<span class='ty'>Semicolon</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Log_Level'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Log_Level</span><span class='badge badge-enum'>ENUM</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Log_Level</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>enum</span> <span class='ty'>i32</span> <span class='br'>{</span>
+	<span class='ty'>Debug</span>   <span class='op'>=</span> <span class='num'>0</span><span class='op'>,</span>
+	<span class='ty'>Info</span>    <span class='op'>=</span> <span class='num'>1</span><span class='op'>,</span>
+	<span class='ty'>Warning</span> <span class='op'>=</span> <span class='num'>2</span><span class='op'>,</span>
+	<span class='ty'>Error</span>   <span class='op'>=</span> <span class='num'>3</span><span class='op'>,</span>
+	<span class='ty'>Fatal</span>   <span class='op'>=</span> <span class='num'>4</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Number'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Number</span><span class='badge badge-union'>UNION</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Number</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>union</span> <span class='br'>{</span>
+	<span class='ty'>int</span><span class='op'>,</span>
+	<span class='ty'>f64</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='JSON_Value'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>JSON_Value</span><span class='badge badge-union'>UNION</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>JSON_Value</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>union</span> <span class='br'>{</span>
+	<span class='ty'>bool</span><span class='op'>,</span>
+	<span class='ty'>int</span><span class='op'>,</span>
+	<span class='ty'>f64</span><span class='op'>,</span>
+	<span class='ty'>string</span><span class='op'>,</span>
+	<span class='br'>[</span><span class='br'>]</span><span class='ty'>JSON_Value</span><span class='op'>,</span>
+	<span class='kw'>map</span><span class='br'>[</span><span class='ty'>string</span><span class='br'>]</span><span class='ty'>JSON_Value</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Expr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Expr</span><span class='badge badge-union'>UNION</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Expr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>union</span> <span class='br'>{</span>
+	<span class='ty'>int</span><span class='op'>,</span>
+	<span class='ty'>f64</span><span class='op'>,</span>
+	<span class='ty'>string</span><span class='op'>,</span>
+	<span class='op'>^</span><span class='ty'>Binary_Expr</span><span class='op'>,</span>
+	<span class='op'>^</span><span class='ty'>Unary_Expr</span><span class='op'>,</span>
+	<span class='op'>^</span><span class='ty'>Call_Expr</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Socket_Addr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Socket_Addr</span><span class='badge badge-union'>UNION</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Socket_Addr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>union</span> <span class='br'>{</span>
+	<span class='ty'>IPv4_Addr</span><span class='op'>,</span>
+	<span class='ty'>IPv6_Addr</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='Result'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Result</span><span class='badge badge-union'>UNION</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Result</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>union</span> <span class='br'>{</span>
+	<span class='ty'>string</span><span class='op'>,</span> <span class='cm'>// ok value</span>
+	<span class='ty'>Error</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='vec2_add'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>vec2_add</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>a</span><span class='label'>:</span><span class='type'>Vec2</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>b</span><span class='label'>:</span><span class='type'>Vec2</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>Vec2</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>vec2_add</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>a</span><span class='op'>:</span> <span class='ty'>Vec2</span><span class='op'>,</span> <span class='ident'>b</span><span class='op'>:</span> <span class='ty'>Vec2</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>Vec2</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ty'>Vec2</span><span class='br'>{</span><span class='ident'>a</span><span class='op'>.</span><span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>b</span><span class='op'>.</span><span class='ident'>x</span><span class='op'>,</span> <span class='ident'>a</span><span class='op'>.</span><span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>b</span><span class='op'>.</span><span class='ident'>y</span><span class='br'>}</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='vec2_length'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>vec2_length</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>v</span><span class='label'>:</span><span class='type'>Vec2</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>f32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>vec2_length</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>v</span><span class='op'>:</span> <span class='ty'>Vec2</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>f32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='num'>0</span> <span class='cm'>// placeholder</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='rect_contains'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>rect_contains</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>r</span><span class='label'>:</span><span class='type'>Rect</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>p</span><span class='label'>:</span><span class='type'>Vec2</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>rect_contains</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>r</span><span class='op'>:</span> <span class='ty'>Rect</span><span class='op'>,</span> <span class='ident'>p</span><span class='op'>:</span> <span class='ty'>Vec2</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>bool</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>p</span><span class='op'>.</span><span class='ident'>x</span> <span class='op'>&gt;=</span> <span class='ident'>r</span><span class='op'>.</span><span class='ident'>x</span> &amp;&amp; <span class='ident'>p</span><span class='op'>.</span><span class='ident'>x</span> <span class='op'>&lt;=</span> <span class='ident'>r</span><span class='op'>.</span><span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>r</span><span class='op'>.</span><span class='ident'>width</span> &amp;&amp; <span class='ident'>p</span><span class='op'>.</span><span class='ident'>y</span> <span class='op'>&gt;=</span> <span class='ident'>r</span><span class='op'>.</span><span class='ident'>y</span> &amp;&amp; <span class='ident'>p</span><span class='op'>.</span><span class='ident'>y</span> <span class='op'>&lt;=</span> <span class='ident'>r</span><span class='op'>.</span><span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>r</span><span class='op'>.</span><span class='ident'>height</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='entity_set_active'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>entity_set_active</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>e</span><span class='label'>:</span><span class='type'>^Entity</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>active</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>entity_set_active</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>e</span><span class='op'>:</span> <span class='op'>^</span><span class='ty'>Entity</span><span class='op'>,</span> <span class='ident'>active</span><span class='op'>:</span> <span class='ty'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>e</span><span class='op'>.</span><span class='ident'>active</span> <span class='op'>=</span> <span class='ident'>active</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='json_is_null'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>json_is_null</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>v</span><span class='label'>:</span><span class='type'>JSON_Value</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>json_is_null</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>v</span><span class='op'>:</span> <span class='ty'>JSON_Value</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>bool</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>v</span> == <span class='bi'>nil</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='result_unwrap'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>result_unwrap</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>r</span><span class='label'>:</span><span class='type'>Result</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>string</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>result_unwrap</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>r</span><span class='op'>:</span> <span class='ty'>Result</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>string</span> <span class='br'>{</span>
+	<span class='ident'>val</span><span class='op'>,</span> <span class='ident'>ok</span> <span class='op'>:</span><span class='op'>=</span> <span class='ident'>r</span><span class='op'>.</span><span class='br'>(</span><span class='ty'>string</span><span class='br'>)</span>
+	<span class='kw'>if</span> <span class='op'>!</span><span class='ident'>ok</span> <span class='kw'>do</span> <span class='kw'>return</span> <span class='str'>&quot;&quot;</span>
+	<span class='kw'>return</span> <span class='ident'>val</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+</div></section>
+<section class='file-group' data-file='proc'>
+<div class='file-header' onclick='toggleFileGroup(this)'>
+  <span class='file-chevron'>&#9660;</span>
+  <span class='file-icon'>&#128196;</span>
+  <span class='file-name'>proc</span>
+  <span class='file-counts'><span class='fc-struct'>1 struct</span><span class='fc-proc'>24 proc</span></span></div>
+<div class='file-body'>
+<details id='Using_Struct'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>Using_Struct</span><span class='badge badge-struct'>STRUCT</span></summary>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ty'>Using_Struct</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>struct</span> <span class='br'>{</span>
+	<span class='ident'>x</span><span class='op'>,</span> <span class='ident'>y</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='basic'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>basic</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+</div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>basic</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span><span class='op'>.</span><span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;basic&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='add'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>add</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>add</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> <span class='op'>+</span> <span class='num'>1</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='add_two'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>add_two</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>add_two</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>,</span> <span class='ident'>y</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>y</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='mixed_params'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>mixed_params</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>f32</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>z</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>mixed_params</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span><span class='op'>,</span> <span class='ident'>y</span><span class='op'>:</span> <span class='ty'>f32</span><span class='op'>,</span> <span class='ident'>z</span><span class='op'>:</span> <span class='ty'>string</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>bool</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='bi'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='named_return'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>named_return</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>result</span><span class='label'>:</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>named_return</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='br'>(</span><span class='ident'>result</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>x</span> <span class='op'>*</span> <span class='num'>2</span>
+	<span class='kw'>return</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='multi_named_return'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>multi_named_return</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>value</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>ok</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>multi_named_return</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='br'>(</span><span class='ident'>value</span><span class='op'>:</span> <span class='ty'>int</span><span class='op'>,</span> <span class='ident'>ok</span><span class='op'>:</span> <span class='ty'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span><span class='op'>,</span> <span class='bi'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='multi_unnamed_return'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>multi_unnamed_return</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>multi_unnamed_return</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='br'>(</span><span class='ty'>int</span><span class='op'>,</span> <span class='ty'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span><span class='op'>,</span> <span class='bi'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='default_value'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>default_value</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>int</span><span class='label'> =</span><span class='num'>10</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>int</span><span class='label'> =</span><span class='num'>20</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>default_value</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span> <span class='op'>=</span> <span class='num'>10</span><span class='op'>,</span> <span class='ident'>y</span><span class='op'>:</span> <span class='ty'>int</span> <span class='op'>=</span> <span class='num'>20</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>y</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foreign_c'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>foreign_c</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>"c"</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>i32</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>i32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>foreign_c</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span> <span class='str'>&quot;c&quot;</span> <span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>i32</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>i32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foreign_std'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>foreign_std</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>"stdcall"</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>i32</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>i32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>foreign_std</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span> <span class='str'>&quot;stdcall&quot;</span> <span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>i32</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>i32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='private_proc'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>private_proc</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+</div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>private_proc</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span><span class='op'>.</span><span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;private&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='multi_attr'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>multi_attr</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>@(export)</span></span><span class='meta-tag'><span class='attr'>@(private)</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>multi_attr</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span><span class='br'>}</span></code></pre></div>
+</details>
+<details id='generic_single'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>generic_single</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>$T</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>generic_single</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> $<span class='ty'>T</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>T</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='generic_multi'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>generic_multi</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>$T</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>y</span><span class='label'>:</span><span class='type'>$U</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>generic_multi</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> $<span class='ty'>T</span><span class='op'>,</span> <span class='ident'>y</span><span class='op'>:</span> $<span class='ty'>U</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>T</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='generic_where'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>generic_where</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>generic</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>$T</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>T</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>generic_where</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> $<span class='ty'>T</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>T</span> <span class='kw'>where</span> <span class='ident'>intrinsics</span><span class='op'>.</span><span class='ident'>type_is_integer</span><span class='br'>(</span><span class='ty'>T</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> <span class='op'>+</span> <span class='num'>1</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='diverging'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>diverging</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>diverging</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>diverging</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='op'>!</span> <span class='br'>{</span>
+	<span class='kw'>for</span> <span class='br'>{</span><span class='br'>}</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='variadic'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>variadic</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>args</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>variadic</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>args</span><span class='op'>:</span> <span class='op'>..</span><span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>int</span> <span class='br'>{</span>
+	<span class='ident'>total</span> <span class='op'>:</span><span class='op'>=</span> <span class='num'>0</span>
+	<span class='kw'>for</span> <span class='ident'>a</span> <span class='kw'>in</span> <span class='ident'>args</span> <span class='kw'>do</span> <span class='ident'>total</span> <span class='op'>+=</span> <span class='ident'>a</span>
+	<span class='kw'>return</span> <span class='ident'>total</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='variadic_any'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>variadic_any</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>args</span><span class='label'>:</span><span class='type'>any</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>variadic_any</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>args</span><span class='op'>:</span> <span class='op'>..</span><span class='ty'>any</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span><span class='op'>.</span><span class='ident'>println</span><span class='br'>(</span><span class='ident'>args</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='takes_callback'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>takes_callback</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>param</span><span class='val'>cb</span><span class='label'>:</span><span class='type'>proc(dt: f32)</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>dt</span><span class='label'>:</span><span class='type'>f32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>takes_callback</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>cb</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>dt</span><span class='op'>:</span> <span class='ty'>f32</span><span class='br'>)</span><span class='op'>,</span> <span class='ident'>dt</span><span class='op'>:</span> <span class='ty'>f32</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>cb</span><span class='br'>(</span><span class='ident'>dt</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='returns_proc'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>returns_proc</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>returns</span><span class='type'>proc(_: int) -> int</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>returns_proc</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>_</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>int</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='kw'>proc</span><span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>int</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>int</span> <span class='br'>{</span><span class='kw'>return</span> <span class='ident'>x</span><span class='br'>}</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='no_param_multi_return'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>no_param_multi_return</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>int</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>string</span></span><span class='meta-tag'><span class='label'>returns</span><span class='val'>_</span><span class='label'>:</span><span class='type'>bool</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>no_param_multi_return</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='br'>(</span><span class='ty'>int</span><span class='op'>,</span> <span class='ty'>string</span><span class='op'>,</span> <span class='ty'>bool</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='num'>1</span><span class='op'>,</span> <span class='str'>&quot;hello&quot;</span><span class='op'>,</span> <span class='bi'>true</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foreign_proc'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>foreign_proc</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='label'>conv</span><span class='val'>"c"</span></span><span class='meta-tag'><span class='label'>param</span><span class='val'>x</span><span class='label'>:</span><span class='type'>i32</span></span><span class='meta-tag'><span class='label'>returns</span><span class='type'>i32</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>foreign_proc</span> <span class='op'>:</span><span class='op'>:</span> <span class='kw'>proc</span> <span class='str'>&quot;c&quot;</span> <span class='br'>(</span><span class='ident'>x</span><span class='op'>:</span> <span class='ty'>i32</span><span class='br'>)</span> <span class='op'>-&gt;</span> <span class='ty'>i32</span> <span class='br'>{</span>
+	<span class='kw'>return</span> <span class='ident'>x</span> <span class='op'>*</span> <span class='num'>2</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foo'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>foo</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>force_inline</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>foo</span> <span class='op'>:</span><span class='op'>:</span> <span class='op'>#</span><span class='ident'>force_inline</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span><span class='op'>.</span><span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;inlined&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+<details id='foo_no'>
+<summary><span class='chevron'>&#9654;</span><span class='item-name'>foo_no</span><span class='badge badge-proc'>PROC</span></summary>
+<div class='meta-bar'>
+<span class='meta-tag'><span class='attr'>force_no_inline</span></span></div>
+<div class='code-wrap'><div class='code-header'><button class='copy-btn' onclick='copyCode(this)' title='Copy code'><svg class='copy-icon' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='5' y='5' width='9' height='9' rx='1.5'/><path d='M3 11V3a1 1 0 0 1 1-1h8'/></svg><svg class='check' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 8l3.5 3.5L13 5'/></svg></button></div><pre><code><span class='ident'>foo_no</span> <span class='op'>:</span><span class='op'>:</span> <span class='op'>#</span><span class='ident'>force_no_inline</span> <span class='kw'>proc</span><span class='br'>(</span><span class='br'>)</span> <span class='br'>{</span>
+	<span class='ident'>fmt</span><span class='op'>.</span><span class='ident'>println</span><span class='br'>(</span><span class='str'>&quot;no inlined&quot;</span><span class='br'>)</span>
+<span class='br'>}</span></code></pre></div>
+</details>
+</div></section>
+
+    <div id="no-results">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <div>No symbols match</div>
+    </div>
+  </div><!-- #api-root -->
+</main>
+
+<script>
+// ── helpers ────────────────────────────────────────────────────────────────────
+function capitalize(str) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ── state ──────────────────────────────────────────────────────────────────────
+var allDetails    = Array.from(document.querySelectorAll("details"));
+var allFileGroups = Array.from(document.querySelectorAll(".file-group"));
+var sidebarScroll = document.getElementById("sidebar-scroll");
+var activeKinds   = {};
+var allExpanded   = false;  // main:    start collapsed
+var sbAllExpanded = false;  // sidebar: start collapsed
+
+var kindLetter     = { PROC:"P", STRUCT:"S", ENUM:"E", UNION:"U" };
+var kindBadgeClass = {
+  PROC:"toc-badge-proc", STRUCT:"toc-badge-struct",
+  ENUM:"toc-badge-enum", UNION:"toc-badge-union"
+};
+
+// ── 1. always start collapsed on load ─────────────────────────────────────────
+allFileGroups.forEach(function(fg) { fg.classList.add("collapsed"); });
+// <details> defaults to closed — no extra work needed
+
+// ── capitalize file-names in main content ──────────────────────────────────────
+document.querySelectorAll(".file-name").forEach(function(el) {
+  el.textContent = capitalize(el.textContent);
+});
+
+// ── build sidebar TOC ──────────────────────────────────────────────────────────
+allFileGroups.forEach(function(fg) {
+  var rawFileName = fg.dataset.file || "unknown";
+  var fileName    = capitalize(rawFileName);
+  var details     = Array.from(fg.querySelectorAll("details"));
+  if (!details.length) return;
+
+  var sbFile = document.createElement("div");
+  sbFile.className = "sb-file";
+
+  // no "open" class → starts collapsed
+  var header = document.createElement("div");
+  header.className = "sb-file-header";
+  header.innerHTML =
+    "<span class='sb-file-chevron'>&#9654;</span>" +
+    "<span class='sb-file-name'>" + fileName + "</span>";
+
+  var items = document.createElement("div");
+  items.className = "sb-file-items"; // no "open" → hidden
+
+  details.forEach(function(d) {
+    var nameEl  = d.querySelector(".item-name");
+    var badgeEl = d.querySelector(".badge");
+    if (!nameEl) return;
+    var kind = badgeEl ? badgeEl.textContent.trim() : "";
+
+    var a = document.createElement("a");
+    a.className   = "toc-link";
+    a.href        = "#" + d.id;
+    a.dataset.kind = kind;
+
+    var badge = document.createElement("span");
+    badge.className   = "toc-badge " + (kindBadgeClass[kind] || "");
+    badge.textContent = kindLetter[kind] || "?";
+    a.appendChild(badge);
+
+    var nameSpan = document.createElement("span");
+    nameSpan.className   = "toc-name";
+    nameSpan.textContent = nameEl.textContent;
+    a.appendChild(nameSpan);
+
+    a.onclick = function(e) { e.preventDefault(); navigateTo(d.id); };
+    items.appendChild(a);
+  });
+
+  header.onclick = function() {
+    var open = header.classList.toggle("open");
+    items.classList.toggle("open", open);
+  };
+
+  sbFile.appendChild(header);
+  sbFile.appendChild(items);
+  sidebarScroll.appendChild(sbFile);
+});
+
+// ── navigation ─────────────────────────────────────────────────────────────────
+function navigateTo(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.open = true;
+  var fg = el.closest(".file-group");
+  if (fg && fg.classList.contains("collapsed")) fg.classList.remove("collapsed");
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  el.classList.add("flash");
+  setTimeout(function() { el.classList.remove("flash"); }, 900);
+  document.querySelectorAll(".toc-link").forEach(function(a) {
+    a.classList.toggle("active", a.href.endsWith("#" + id));
+  });
+  history.replaceState(null, "", "#" + id);
+}
+
+// ── sidebar toggle ─────────────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("hidden");
+}
+
+// ── file group collapse (main) ─────────────────────────────────────────────────
+function toggleFileGroup(headerEl) {
+  var fg = headerEl.closest(".file-group");
+  if (fg) fg.classList.toggle("collapsed");
+}
+
+// ── icon swap helper ───────────────────────────────────────────────────────────
+function syncIcons(expandEl, collapseEl, expanded) {
+  expandEl.style.display  = expanded ? "none" : "";
+  collapseEl.style.display = expanded ? ""    : "none";
+}
+
+// ── expand/collapse all — main ─────────────────────────────────────────────────
+function toggleAll() {
+  allExpanded = !allExpanded;
+  syncIcons(
+    document.getElementById("main-icon-expand"),
+    document.getElementById("main-icon-collapse"),
+    allExpanded
+  );
+  allDetails.forEach(function(d) { d.open = allExpanded; });
+  allFileGroups.forEach(function(fg) {
+    fg.classList.toggle("collapsed", !allExpanded);
+  });
+}
+
+// ── expand/collapse all — sidebar ─────────────────────────────────────────────
+function sbToggleAll() {
+  sbAllExpanded = !sbAllExpanded;
+  syncIcons(
+    document.getElementById("sb-icon-expand"),
+    document.getElementById("sb-icon-collapse"),
+    sbAllExpanded
+  );
+  document.querySelectorAll(".sb-file-header").forEach(function(h) {
+    h.classList.toggle("open", sbAllExpanded);
+  });
+  document.querySelectorAll(".sb-file-items").forEach(function(items) {
+    items.classList.toggle("open", sbAllExpanded);
+  });
+}
+
+// ── kind filter ────────────────────────────────────────────────────────────────
+function toggleKind(btn) {
+  var kind = btn.dataset.kind;
+  if (activeKinds[kind]) { delete activeKinds[kind]; btn.classList.remove("on"); }
+  else                   { activeKinds[kind] = true;  btn.classList.add("on"); }
+  applyFilters();
+}
+
+// ── search + filter ────────────────────────────────────────────────────────────
+function applyFilters() {
+  var term      = document.getElementById("search").value.toLowerCase();
+  var hasKind   = Object.keys(activeKinds).length > 0;
+  var anyVisible = false;
+
+  allFileGroups.forEach(function(fg) {
+    var groupHas = false;
+    Array.from(fg.querySelectorAll("details")).forEach(function(d) {
+      var nameEl  = d.querySelector(".item-name");
+      var badgeEl = d.querySelector(".badge");
+      var kind = badgeEl ? badgeEl.textContent.trim() : "";
+      var name = nameEl  ? nameEl.textContent.toLowerCase() : "";
+      var vis  = (!term || name.includes(term)) && (!hasKind || activeKinds[kind]);
+      d.style.display = vis ? "" : "none";
+      if (vis) { groupHas = true; anyVisible = true; }
+    });
+    fg.style.display = groupHas ? "" : "none";
+  });
+
+  document.querySelectorAll(".toc-link").forEach(function(a) {
+    var kind   = a.dataset.kind || "";
+    var nameEl = a.querySelector(".toc-name");
+    var name   = nameEl ? nameEl.textContent.toLowerCase() : "";
+    a.style.display =
+      ((!term || name.includes(term)) && (!hasKind || activeKinds[kind])) ? "" : "none";
+  });
+
+  document.getElementById("no-results").style.display = anyVisible ? "none" : "block";
+}
+
+document.getElementById("search").addEventListener("input", applyFilters);
+
+// ── copy button ────────────────────────────────────────────────────────────────
+function copyCode(btn) {
+  var code = btn.closest("details").querySelector("code");
+  if (!code) return;
+  navigator.clipboard.writeText(code.textContent).then(function() {
+    btn.classList.add("copied");
+    setTimeout(function() { btn.classList.remove("copied"); }, 1800);
+  });
+}
+
+// ── anchor on load ─────────────────────────────────────────────────────────────
+(function() {
+  var hash = window.location.hash.slice(1);
+  if (!hash) return;
+  var el = document.getElementById(hash);
+  if (!el) return;
+  el.open = true;
+  var fg = el.closest(".file-group");
+  if (fg) fg.classList.remove("collapsed");
+  setTimeout(function() { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 100);
+}());
+</script>
+</body>
+</html>
